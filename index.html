@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" /> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>¡Pop!</title>
+    <link rel="icon" href="images/favicon.png" type="image/png">
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="modal-inicio" class="modal modal-inicio">
+     <div class="modal-content-inicio">
+      <div class="modal-content-inicio-header">
+        <img class="game-logo-modal-init" src="images/logo.png">
+      </div>
+      <p class="descripcion-modal-init">
+        Rellena las pilas con el número exacto.
+        Dispara o usa el cursor para explotar las bolas y sumar energía.
+        ¡No te pases del valor! Desapila el exceso y sigue acumulando puntos.<br>
+        💥 <strong>Completa pilas, gana puntos y supera tu récord.</strong>
+      </p>
+      <button id="btn-iniciar">¡A jugar!</button>
+     </div>
+    </div>
+    <!-- 🔴 Modal de Game Over -->
+    <div id="modal-gameover" class="modal modal-final">
+      <div class="modal-content-final">
+        <div class="modal-content-final-header">
+          <h1 class="title-modal-final">¡Juego Terminado!</h1>
+          <img class="game-logo-modal-final" src="images/logo.png">
+        </div>
+        <div class="puntajes-game-over-container">
+          <p class="texto-puntaje-game-over">Puntaje:<span id="texto-puntaje-game-over"></span></p>
+          <p class="texto-puntaje-game-over">Tu récord:<span id="texto-max-puntaje-game-over"></span></p>
+        </div>
+        <button id="btn-reiniciar">Reiniciar</button>
+      </div>
+    </div>
+    <div class="container">
+        <canvas id="game"></canvas>
+        <div id="panel-pilas">
+
+         <div class="info-container">
+          <div class="puntuacion-container">
+            <div class="puntuacion puntuacion-actual"><span>Puntuación actual: 0</span></div>
+            <div class="puntuacion puntuacion-record"><span>Puntuación récord: 0</span></div>
+          </div>
+          <div class="vidas-container">
+            <div class="vida"></div>
+            <div class="vida"></div>
+            <div class="vida"></div>
+            <div class="vida"></div>
+            <div class="vida"></div>
+            <div class="vida"></div>
+            <div class="vida"></div>
+          </div>
+         </div>
+
+          <div class="pilas-container">
+            <div class="pila-container">
+              <span class="pila-label-aim" id="aim-1">30</span>
+              <div class="pila" id="pila1">
+                <div class="pila-barra" id="pila1-barra">
+                  <span class="pila-label-had" id="acumulativo1">0</span>
+                </div>
+              </div>
+              <button class="desapilar-1 boton-desapilar"></button>
+            </div>
+            <div class="pila-container">
+              <span class="pila-label-aim" id="aim-2">45</span>
+              <div class="pila" id="pila2">
+                <div class="pila-barra" id="pila2-barra">
+                  <span class="pila-label-had" id="acumulativo2">0</span>
+                </div>
+              </div>
+              <button class="desapilar-2 boton-desapilar"></button>
+            </div>
+          </div>
+          <div class="cola-container">
+            <h3 class="lista-auxiliar">Lista auxiliar:</h3>
+            <div class="cola">
+              <div class="elemento-cola"></div>
+              <div class="elemento-cola"></div>
+              <div class="elemento-cola"></div>
+              <div class="elemento-cola"></div>
+            </div>
+            <div class="acciones-cola">
+              <button class="accion-botones accion-recoger"></button>
+              <button class="accion-botones accion-apilar"></button>
+              <button class="boton-reiniciar-ui"></button>
+            </div>
+          </div>
+  </div>
+    </div>
+    <script src="game.js"></script>
+  </body>
+</html>

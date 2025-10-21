@@ -1,0 +1,393 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  min-width: 900px;   /* ✅ mínimo ancho */
+  min-height: 600px;  /* ✅ mínimo alto */
+  overflow: hidden; /* ✅ evita scrolls innecesarios */
+  font-family:'Poppins', sans-serif;
+}
+/* Evita que el texto sea seleccionado */
+* {
+  user-select: none;
+}
+
+/* También evita que reciba foco visual */
+*:focus {
+  outline: none;
+}
+canvas {
+  background: #222;
+  border: 2px solid #444;
+}
+.container{
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+canvas{
+  flex: 7;
+  width: 100%;
+  height: 100%;
+}
+/* --- Panel de pilas --- */
+#panel-pilas {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #222121;
+  box-sizing: border-box;
+}
+
+
+/* --- Contenedor de pilas --- */
+.pilas-container {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  width: 80%;
+  margin-top: 17px;
+}
+.pila-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* --- Cada pila individual --- */
+.pila {
+  position: relative;
+  width: 80px;
+  height: 300px;
+  background: #333;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid #555;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+/* --- Etiquetas --- */
+.pila-label-aim{
+  font-size: 3rem;
+  color: rgb(113, 161, 117);
+}
+.pila-label-had{
+  position: absolute;
+  font-size: 2rem;
+  color: rgb(224, 208, 208);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.pilaSelected{
+  border:4px solid #00FF00;
+}
+.pila-barra {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column-reverse; /* invierte la dirección de la columna */
+  justify-content: flex-start; 
+}
+.div-relleno{
+  height: 0px;
+  width: 100%;
+  transition: height ease-in-out 0.7s;
+}
+.boton-desapilar{
+  width: 55px;                /* ancho del botón */
+  height: 55px;               /* alto del botón */
+  background-image: url('images/borro.png');   /* ajusta la imagen al tamaño del botón */
+  background-repeat: no-repeat; /* evita que la imagen se repita */
+  background-position: center;  /* centra la imagen */
+  background-color: #0e0d0d;
+  border-radius: 50%;
+  cursor: pointer;            /* cambia el cursor al pasar sobre el botón */
+  border: none;
+}
+.boton-desapilar:hover{
+  transform: scale(1.1);
+  background-color: #000000;
+}
+.boton-desapilar:disabled{
+  opacity: 0.5;       /* más transparente */
+  cursor: not-allowed; /* cambia el cursor */
+  transform: scale(1);
+}
+.info-container{
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+  margin-top: 5px;
+  width: 100%;
+  margin-left: 5px;
+  gap: 10px;
+}
+.puntuacion-container{
+  display: flex;
+  width: 100%;
+  gap: 10%;
+}
+.vidas-container{
+  display: flex;
+  gap: 5px;
+  height: 30px;
+}
+.vida{
+  width: 25px;                /* ancho del botón */
+  height: 25px; 
+  background-image: url('images/vida.png');
+  transition: opacity 15s linear, transform 15s linear; /* animación suave de opacidad y tamaño */; /* transición suave */
+}
+.vida-perdida{
+  opacity: 0;               /* se desvanece */
+  transform: scale(0.3);    /* se encoge */
+
+}
+.puntuacion{
+  font-size: 0.9rem;
+  color: rgb(214, 214, 214);
+  font-weight: 700;
+}
+.puntuacion-record{
+  color: #858383;
+}
+.cola-container{
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+.cola{
+  display: flex;
+  width: fit-content;
+  margin-bottom: 30px;
+}
+.elemento-cola{
+  width: 50px;
+  height: 50px;
+  border:1px solid gray;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  color: rgb(214, 214, 214);
+}
+.lista-auxiliar{
+  align-self: flex-start;
+  color: rgb(214, 214, 214);
+  margin-left: 10px;
+}
+.acciones-cola{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  gap: 20px;
+}
+.accion-recoger{
+  background-image: url("images/hacer-clic.png");
+}
+.accion-recoger:disabled{
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.accion-recoger:disabled:hover{
+  transform: scale(1);
+}
+.accion-apilar:disabled{
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.accion-apilar:disabled:hover{
+  transform: scale(1);
+}
+.accion-apilar{
+  background-image: url("images/apilado.png");
+}
+.accion-botones{
+  width: 55px;
+  height: 55px;
+  background-repeat: no-repeat; /* evita que la imagen se repita */
+  background-position: center;  /* centra la imagen */
+  background-color: #0e0d0d;
+  border-radius: 50%;
+  cursor: pointer;            /* cambia el cursor al pasar sobre el botón */
+  border: none;
+}
+.accion-botones:hover{
+  transform: scale(1.1);
+  background-color: #000000;
+}
+.modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 10, 0.7);
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+.modal-inicio{
+  display: flex;
+}
+.invisible{
+  display: none;
+}
+.modal-content-inicio{
+  color: white;
+  background-color: #1f1e1e;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 800px;
+  height: 300px;
+  border-radius: 20px; 
+  padding-left: 7px;
+
+}
+#btn-iniciar{
+ border: 2px solid #3aca3a;
+ background-color: #3aca3a15;
+ border-radius: 7px;
+ color: white;
+ width: fit-content;
+ height: fit-content;
+ font-size: 1.2rem;
+ font-weight: 700;
+ padding: 7px;
+ align-self: center;
+ margin-top: auto;
+ margin-bottom: 25px;
+ cursor: pointer;
+ transition: transform ease 0.2s,background-color ease 0.2s;
+}
+#btn-iniciar:hover{
+  background-color: #3aca3a;
+  transform: scale(1.1);
+}
+.modal-final{
+  display: none;
+}
+.modal-final-visible{
+  display: flex;
+}
+.modal-content-final{
+  color: white;
+  background-color: #1f1e1e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 800px;
+  height: 300px;
+  border-radius: 20px; 
+  padding-left: 7px;
+}
+#btn-reiniciar{
+ border: 2px solid #3aca3a;
+ background-color: #3aca3a15;
+ border-radius: 7px;
+ color: white;
+ width: fit-content;
+ height: fit-content;
+ font-size: 1.2rem;
+ font-weight: 700;
+ padding: 7px;
+ align-self: center;
+ margin-top: auto;
+ margin-bottom: 25px;
+ cursor: pointer;
+ transition: transform ease 0.2s,background-color ease 0.2s;
+  
+}
+#btn-reiniciar:hover{
+  background-color: #3aca3a;
+  transform: scale(1.1);
+}
+.boton-reiniciar-ui{
+ position: absolute;
+ right: 40px;
+ height: 50px;
+ width: 50px;
+ border-radius: 50%;
+ border: none;
+ background-color: #0e0d0d;
+ background-repeat: no-repeat;
+ background-position: center;
+ cursor: pointer;
+ background-image: url("images/rotacion-de-flecha-circular-en-sentido-antihorario.png");
+}
+.boton-reiniciar-ui:hover{
+  transform: scale(1.1);
+  background-color: #000000;
+}
+.puntajes-game-over-container{
+  display: flex;
+  gap: 45px;
+  align-items: center;
+   margin-top: auto;
+  margin-bottom: auto;
+
+
+}
+#texto-puntaje-game-over{
+  color:#39b839;
+  font-size: 1.5rem;
+  margin-left: 7px;
+}
+#texto-max-puntaje-game-over{
+  color: rgb(212, 206, 206);
+  font-size: 1.7rem;
+  margin-left: 7px;
+}
+.texto-puntaje-game-over{
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: rgb(175, 173, 173);
+}
+.modal-content-inicio-header{
+  display: flex;
+  width: 100%;
+  justify-content: center;
+
+}
+.descripcion-modal-init{
+  padding-left: 17px;
+  padding-right: 17px;
+  font-weight: 600;
+  color: #dfdddd;
+}
+.game-logo-modal-init{
+  margin-top: 7px;
+}
+.modal-content-final-header{
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: fit-content;
+}
+.game-logo-modal-final{
+  position: absolute;
+  right: 17px;
+  top: 0px;
+}
+.title-modal-final{
+  justify-self: center;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 0px;
+  margin-top: 40px;
+  color: #dfdddd;
+}
