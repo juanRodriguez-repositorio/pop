@@ -96,7 +96,6 @@ let gameOver=false;
 let intervaloVida;
 let permitirRecoger=false;
 let contadorCantidadRecogida=0;
-let colaAuxiliar=[];
 let setTimeoutRecoger;
 botonRecoger.disabled=true;
 botonApilarDesdeCola.disabled=true;
@@ -116,6 +115,66 @@ if (maxPuntajeLocalStorage === null) {
   localStorage.setItem("maxPuntaje", maxPuntajeLocalStorage);
 };
 maxPuntajeUi.innerHTML=`<span>Puntuación récord: ${maxPuntajeLocalStorage}</span>`;
+
+class Node {
+  constructor(value) {
+    this.value = value;
+    this.next = null;
+  }
+}
+
+class Queue {
+  constructor() {
+    this.front = null; // primer elemento
+    this.rear = null;  // último elemento
+    this.size = 0;
+  }
+
+  // Encolar (añadir al final)
+  enqueue(value) {
+    const newNode = new Node(value);
+    if (!this.rear) {
+      // Si la cola está vacía
+      this.front = newNode;
+      this.rear = newNode;
+    } else {
+      this.rear.next = newNode;
+      this.rear = newNode;
+    }
+    this.size++;
+  }
+
+  // Desencolar (eliminar del frente)
+  dequeue() {
+    if (!this.front) return null; // cola vacía
+    const value = this.front.value;
+    this.front = this.front.next;
+    if (!this.front) this.rear = null; // si quedó vacía
+    this.size--;
+    return value;
+  }
+
+  // Ver el primer elemento sin eliminarlo
+  peek() {
+    return this.front ? this.front.value : null;
+  }
+
+  isEmpty() {
+    return this.size === 0;
+  }
+
+  print() {
+    let current = this.front;
+    const elements = [];
+    while (current) {
+      elements.push(current.value);
+      current = current.next;
+    }
+    console.log(elements.join(" <- "));
+  }
+};
+let colaAuxiliar=new Queue();
+
 class Bola {
   constructor(x, y, r, valor, vx, vy) {
     this.x = x;       // posición en X
@@ -485,7 +544,7 @@ function reiniciarJuego(){
   pila2.reiniciar();
   permitirRecoger=false;
   contadorCantidadRecogida=0;
-  colaAuxiliar=[];
+  colaAuxiliar=new Queue();
   botonRecoger.disabled=true;
   botonApilarDesdeCola.disabled=true;
   clearInterval(intervaloVida);
@@ -532,16 +591,18 @@ function isClickOnBarrel(mx, my) {
   return localX > 0 && localX < cannon.length && Math.abs(localY) < 12;
 }
 function actualizarHtmlCola(){
- for(let i=0;i<4;i++){
-  const elementoHtml=elementosCola[i];
-  if(!colaAuxiliar[i]){
-    elementoHtml.innerHTML="";
-    elementoHtml.style.backgroundColor=`transparent`;
-    continue;
+  let current = colaAuxiliar.front;
+  for (let i = 0; i < 4; i++) {
+    const elementoHtml = elementosCola[i];
+    if (!current) {
+      elementoHtml.innerHTML = "";
+      elementoHtml.style.backgroundColor = "transparent";
+    } else {
+      elementoHtml.innerHTML = `<span>${current.value.num}</span>`;
+      elementoHtml.style.backgroundColor = current.value.color;
+      current = current.next;
+    }
   }
-  elementoHtml.innerHTML=`<span>${colaAuxiliar[i].num}<span>`;
-  elementoHtml.style.backgroundColor=`${colaAuxiliar[i].color}`
- }
 }
 
 //eventos
@@ -560,9 +621,9 @@ botonIniciarJuego.addEventListener("click",()=>{
 })
 
 botonApilarDesdeCola.addEventListener("click",()=>{
-  const elemento=colaAuxiliar.shift();
+  const elemento=colaAuxiliar.dequeue();
   pilaSeleccionada.push(elemento.num,elemento.color);
-  if(colaAuxiliar.length===0){
+  if(colaAuxiliar.isEmpty()){
     botonApilarDesdeCola.disabled=true;
   };
   actualizarHtmlCola();
@@ -570,14 +631,14 @@ botonApilarDesdeCola.addEventListener("click",()=>{
 });
 
 botonRecoger.addEventListener("click",()=>{
-  if(contadorCantidadRecogida===4 && colaAuxiliar.length<4){
+  if(contadorCantidadRecogida===4 && colaAuxiliar.size<4){
     permitirRecoger=true;
-    contadorCantidadRecogida=colaAuxiliar.length
+    contadorCantidadRecogida=colaAuxiliar.size
   }else if(contadorCantidadRecogida<4){
     permitirRecoger=true;
   }
   botonRecoger.disabled=true;
-  setTimeout(()=>{
+  setTimeoutRecoger=setTimeout(()=>{
     botonRecoger.disabled=false
   },60000);
 })
@@ -681,7 +742,7 @@ canvas.addEventListener("click", e => {
       sonidoImpactar();
       // eliminar la bola y el proyectil
       bolas.splice(i, 1);
-      colaAuxiliar.push({num:b.valor,color:b.color});
+      colaAuxiliar.enqueue({num:b.valor,color:b.color});
       contadorCantidadRecogida++;
       if(contadorCantidadRecogida==4){
         permitirRecoger=false;
@@ -695,6 +756,10 @@ canvas.addEventListener("click", e => {
     }
   }
 });
+/**
+ * Actualiza las posiciones, detecta colisiones, 
+ * maneja explosiones y genera nuevas bolas.
+ */
 
 function update() {
   for (let i = projectiles.length - 1; i >= 0; i--) {
@@ -731,7 +796,7 @@ function update() {
 
   for (let i =0; i<bolas.length; i++) {
     const b = bolas[i];
-    for (let j =0; j < projectiles.length; j++) {
+    for (let j=0; j < projectiles.length; j++) {
       const p = projectiles[j];
       if (b.colisionaCon(p)) {
         // Crear explosión
@@ -739,6 +804,7 @@ function update() {
         sonidoImpactar();
         // eliminar la bola y el proyectil
         bolas.splice(i, 1);
+        i--;
         contadorBolasMuertas++;
         projectiles.splice(j, 1);
         pilaSeleccionada.push(b.valor,b.color);
